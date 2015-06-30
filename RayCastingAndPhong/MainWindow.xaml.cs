@@ -26,7 +26,6 @@ namespace RayCastingAndPhong
         public int y;
     }
 
-
     public partial class MainWindow : Window
     {
 
@@ -88,19 +87,11 @@ namespace RayCastingAndPhong
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.canvasWidth = (int)this.gOurGrid.ActualHeight; //Canvas.ActualWidthProperty(this.cOurCanvas);// (int)this.cOurCanvas.Width;
-            this.canvasHeight = (int)this.gOurGrid.Height;
+            this.canvasWidth = (int)this.gOurGrid.ActualWidth; //Canvas.ActualWidthProperty(this.cOurCanvas);// (int)this.cOurCanvas.Width;
+            this.canvasHeight = (int)this.gOurGrid.ActualHeight;
 
             this.Start();
         }
-
-        //private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    this.canvasWidth = (int)this.gOurGrid.ActualWidth;
-        //    this.canvasHeight = (int)this.gOurGrid.ActualHeight;
-        //    this.Reset();
-        //    this.Start();
-        //}
 
         private void Reset()
         {
