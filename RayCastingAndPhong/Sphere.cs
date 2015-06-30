@@ -21,8 +21,8 @@ namespace RayCastingAndPhong.RayCasting
         public int R { get { return _r; } set { _r = value; } }
         public int G { get { return _g; } set { _g = value; } }
         public int B { get { return _b; } set { _b = value; } }
-        public double Radius { get{ return _radius;} set { _radius = value } }
-        public Color SpehereColor { get { return _spehereColor; } set { _spehereColor = value; }; }
+        public double Radius { get { return _radius; } set { _radius = value; } }
+        public Color SpehereColor { get { return _spehereColor; } set { _spehereColor = value; } }
 
 
 
