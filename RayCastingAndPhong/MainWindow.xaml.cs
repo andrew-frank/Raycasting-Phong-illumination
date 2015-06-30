@@ -28,7 +28,7 @@ namespace RayCastingAndPhong
         public MainWindow()
         {
             InitializeComponent();
-            DrawPixel(0, 0, Colors.Red, 30);
+            DrawPixel(0, 0, Colors.Red, 1);
             //Sphere sampleSphere = new Sphere();
             //sampleSphere.Radius = 10;
             //sampleSphere.SpehereColor = Colors.Red;
