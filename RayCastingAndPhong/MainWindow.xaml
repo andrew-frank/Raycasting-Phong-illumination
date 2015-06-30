@@ -3,6 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="300" Width="500">
     <Grid>
-        <Canvas Name="cOurCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+        <Canvas Name="cOurCanvas" HorizontalAlignment="Center" VerticalAlignment="Center" Background="White"
+                RenderTransformOrigin="0.5,0.5">
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1" ScaleY="-1"/>
+                </TransformGroup>
+            </Canvas.RenderTransform>
+        </Canvas>
     </Grid>
 </Window>
