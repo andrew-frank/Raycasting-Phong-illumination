@@ -20,10 +20,15 @@ using System.Windows.Shapes;
 namespace RayCastingAndPhong
 {
 
-    public struct kupa
+    public class Kupa
     {
         public int x;
         public int y;
+
+        public override string ToString()
+        {
+            return "[" + x + ", " + y + "]";
+        }
     }
 
     public partial class MainWindow : Window
@@ -50,7 +55,7 @@ namespace RayCastingAndPhong
             x = 0, y = 0, z = 0
         };
 
-        private List<kupa> grid = new List<kupa>();
+        private List<Kupa> grid = new List<Kupa>();
 
 
         public MainWindow()
@@ -110,7 +115,7 @@ namespace RayCastingAndPhong
                     this.SphereInterscetionCheck(this.camera, new SinglePoint { x = i, y = j, z = 0 });
             }
 
-            Debug.WriteLine("\n\n******-------------******\n");
+            Debug.WriteLine("\n\n******------- Done ------******\n");
             //foreach (kupa k in this.grid)
             //    Debug.WriteLine("[" + k.x + ", "+ k.y + "]");
         }
@@ -163,10 +168,10 @@ namespace RayCastingAndPhong
                 DrawPixel((int)p1.x, (int)p1.y, Colors.White, 1);
             } else if (delta == 0) {
                 DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new kupa { x = (int)p1.x, y = (int)p1.y });
+                this.grid.Add(new Kupa { x = (int)p1.x, y = (int)p1.y });
             } else {
                 DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new kupa { x = (int)p1.x, y = (int)p1.y });
+                this.grid.Add(new Kupa { x = (int)p1.x, y = (int)p1.y });
             }   
         }
 
