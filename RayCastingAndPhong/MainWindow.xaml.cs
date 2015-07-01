@@ -20,7 +20,7 @@ using System.Windows.Shapes;
 namespace RayCastingAndPhong
 {
 
-    public class Kupa
+    public class PointToCheck
     {
         public int x;
         public int y;
@@ -44,18 +44,21 @@ namespace RayCastingAndPhong
         //};
 
         private Sphere sampleSphere = new Sphere {
-            Center = new SinglePoint { x = 5170, y = 60, z = 8 },
+            Center = new SinglePoint { x = 100, y = 100, z = 8 },
             R = 200,
             G = 20,
             B = 140,
-            Radius = 10
+            Radius = 10,
+            SpehereColor = Colors.Green
         };
 
         private SinglePoint camera = new SinglePoint {
-            x = 0, y = 0, z = 0
+            x = 0, y = 0, z = 1
         };
 
-        private List<Kupa> grid = new List<Kupa>();
+        private List<PointToCheck> grid = new List<PointToCheck>();
+
+        private List<SinglePoint> pointsOfIntersection = new List<SinglePoint>();
 
 
         public MainWindow()
@@ -92,8 +95,10 @@ namespace RayCastingAndPhong
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.canvasWidth = (int)this.gOurGrid.ActualWidth; //Canvas.ActualWidthProperty(this.cOurCanvas);// (int)this.cOurCanvas.Width;
-            this.canvasHeight = (int)this.gOurGrid.ActualHeight;
+            //this.canvasWidth = (int)this.gOurGrid.ActualWidth; //Canvas.ActualWidthProperty(this.cOurCanvas);// (int)this.cOurCanvas.Width;
+            //this.canvasHeight = (int)this.gOurGrid.ActualHeight;
+            this.canvasHeight = 400;
+            this.canvasWidth = 400;
 
             this.Start();
         }
@@ -105,7 +110,9 @@ namespace RayCastingAndPhong
 
         private void Start()
         {
+            
             //DrawPixel(this.canvasWidth/2, this.canvasHeight/2, Colors.Red, 40);
+            //DrawPixel(100, 100, Colors.Blue, 40);
 
             if (this.canvasWidth <= 0 || this.canvasHeight <= 0)
                 return;
@@ -131,7 +138,7 @@ namespace RayCastingAndPhong
             Canvas.SetTop(el, y - size / 2);
             cOurCanvas.Children.Add(el);
 
-            SinglePoint p = new SinglePoint();
+            //SinglePoint p = new SinglePoint();
         }
 
         private void ShiftCoordinates(ref SinglePoint p)
@@ -148,7 +155,7 @@ namespace RayCastingAndPhong
          */
         private void SphereInterscetionCheck(SinglePoint p0, SinglePoint p1)
         {
-            double dx, dy, dz, a, b, c, delta;
+            double dx, dy, dz, a, b, c, delta, t;
             SinglePoint lightPoint = new SinglePoint();
             lightPoint.x = 10;
             lightPoint.y = 15;
@@ -159,20 +166,26 @@ namespace RayCastingAndPhong
             dz = p1.z - p0.z;
 
             a = dx * dx + dy * dy + dz * dz;
-            b = 2 * dx * (p0.z - p1.x) + 2 * dy * (p0.y - p1.y) + 2 * dz * (p0.z - p1.z);
-            c = p1.x * p1.x + p1.y * p1.y + p1.z * p1.z + p0.x * p0.x + p0.y * p0.y + p0.z * p0.z - 2 * (p1.x * p0.x + p1.y * p0.y + p1.z * p0.z)
+            b = 2 * dx * (p0.x - this.sampleSphere.Center.x) + 2 * dy * (p0.y - this.sampleSphere.Center.y) + 2 * dz * (p0.z - this.sampleSphere.Center.z);
+            c = this.sampleSphere.Center.x * this.sampleSphere.Center.x + this.sampleSphere.Center.y * this.sampleSphere.Center.y
+                + this.sampleSphere.Center.z * this.sampleSphere.Center.z + p0.x * p0.x + p0.y * p0.y + p0.z * p0.z
+                - 2 * (this.sampleSphere.Center.x * p0.x + this.sampleSphere.Center.y * p0.y + this.sampleSphere.Center.z * p0.z)
                 - this.sampleSphere.Radius * this.sampleSphere.Radius;
 
             delta = b * b - 4 * a * c;
             if (delta < 0) {
-                DrawPixel((int)p1.x, (int)p1.y, Colors.White, 1);
+                DrawPixel((int)p1.x, (int)p1.y, Colors.Black, 1);
             } else if (delta == 0) {
                 DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new Kupa { x = (int)p1.x, y = (int)p1.y });
+                this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
             } else {
                 DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new Kupa { x = (int)p1.x, y = (int)p1.y });
-            }   
+                this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
+            }
+
+            t = (-b - Math.Sqrt(delta)) / (2 * a);            
+            pointsOfIntersection.Add(new SinglePoint { x = p0.x + t * dx, y = p0.y + t * dy, z = p0.z + t * dz });
+
         }
 
         private Color DiffuseShading(Sphere sphere, SinglePoint viewerPoint, SinglePoint lightPoint, double dx, double dy, double dz, double a, double b, double c, int width, int height)
