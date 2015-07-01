@@ -4,8 +4,6 @@
         Title="MainWindow" Height="439" Width="416" ResizeMode="NoResize" Activated="Window_Activated" Loaded="Window_Loaded">
     <Grid x:Name="gOurGrid">
         <Canvas Name="cOurCanvas" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center"
-                Width="0" Height="0" RenderTransform="1 0 0 -1 0 0">
-            
-        </Canvas>
+                Width="0" Height="0" RenderTransform="1 0 0 -1 0 0"/>
     </Grid>
 </Window>

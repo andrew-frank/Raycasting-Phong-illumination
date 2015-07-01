@@ -22,12 +22,13 @@ namespace RayCastingAndPhong
 
     public class PointToCheck
     {
-        public int x;
-        public int y;
+        public double x;
+        public double y;
+        public double delta;
 
         public override string ToString()
         {
-            return "[" + x + ", " + y + "]";
+            return "[" + x + ", " + y + "| Delta: " + delta + "]";
         }
     }
 
@@ -44,22 +45,29 @@ namespace RayCastingAndPhong
         //};
 
         private Sphere sampleSphere = new Sphere {
-            Center = new SinglePoint { x = 100, y = 100, z = 8 },
-            R = 200,
-            G = 20,
-            B = 140,
-            Radius = 10,
+            Center = new SinglePoint { x = 50, y = 50, z = 4 },
+            R = 255,
+            G = 0,
+            B = 0,
+            Radius = 500,
             SpehereColor = Colors.Green
         };
 
         private SinglePoint camera = new SinglePoint {
-            x = 0, y = 0, z = 1
+            x = 0, y = 0, z = 0
         };
 
         private List<PointToCheck> grid = new List<PointToCheck>();
 
         private List<SinglePoint> pointsOfIntersection = new List<SinglePoint>();
 
+        Vector3D normalVector = new Vector3D();
+        Vector3D lightVector = new Vector3D();
+
+        double dx, dy, dz, a, b, c, delta, t;
+
+        SinglePoint lightPoint = new SinglePoint();
+       
 
         public MainWindow()
         {
@@ -113,22 +121,22 @@ namespace RayCastingAndPhong
             
             //DrawPixel(this.canvasWidth/2, this.canvasHeight/2, Colors.Red, 40);
             //DrawPixel(100, 100, Colors.Blue, 40);
-
+            //DrawPixel(-100, -100, Colors.Blue, 40);
             if (this.canvasWidth <= 0 || this.canvasHeight <= 0)
                 return;
-
-            for (int i = 0; i < this.canvasWidth; i++) {
-                for (int j = 0; j < this.canvasHeight; j++)
+            
+            for (int i = -this.canvasWidth / 2; i < this.canvasWidth / 2; i++) {
+                for (int j = -this.canvasHeight / 2; j < this.canvasHeight / 2; j++)
                     this.SphereInterscetionCheck(this.camera, new SinglePoint { x = i, y = j, z = 0 });
             }
-
+            
             Debug.WriteLine("\n\n******------- Done ------******\n");
-            //foreach (kupa k in this.grid)
-            //    Debug.WriteLine("[" + k.x + ", "+ k.y + "]");
+            //DrawPixel(0, 0, Colors.Orange, 4);
+
         }
 
 
-        private void DrawPixel(int x, int y, Color color, int size)
+        private void DrawPixel(double x, double y, Color color, int size)
         {
             Ellipse el = new Ellipse();
             el.Width = size;
@@ -155,11 +163,11 @@ namespace RayCastingAndPhong
          */
         private void SphereInterscetionCheck(SinglePoint p0, SinglePoint p1)
         {
-            double dx, dy, dz, a, b, c, delta, t;
-            SinglePoint lightPoint = new SinglePoint();
-            lightPoint.x = 10;
-            lightPoint.y = 15;
-            lightPoint.z = 5;
+            lightPoint.x = 0;
+            lightPoint.y = 50;
+            lightPoint.z = 0;
+
+            //p1.z = (double)Math.Sqrt(Math.Pow(p0.x - p1.x, 2) + Math.Pow(p0.y - p1.y, 2) + Math.Pow(p0.z - p1.z, 2));
 
             dx = p1.x - p0.x;
             dy = p1.y - p0.y;
@@ -173,41 +181,53 @@ namespace RayCastingAndPhong
                 - this.sampleSphere.Radius * this.sampleSphere.Radius;
 
             delta = b * b - 4 * a * c;
+
+            t = (-b - Math.Sqrt(delta)) / (2 * a);
+            SinglePoint diffuseShadingPoint = new SinglePoint { x = p0.x + t * dx, y = p0.y + t * dy, z = p0.z + t * dz };
+            pointsOfIntersection.Add(diffuseShadingPoint);
+
+
             if (delta < 0) {
-                DrawPixel((int)p1.x, (int)p1.y, Colors.Black, 1);
+                DrawPixel((p0.x + t * dx), (p0.y + t * dy), Colors.Black, 1);
             } else if (delta == 0) {
-                DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
+                //DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
+                //this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
+
+                //DrawPixel((p0.x + t * dx), (p0.y + t * dy), Colors.Green, 1);
+                //this.grid.Add(new PointToCheck { x = (p0.x + t * dx), y = (p0.y + t * dy), delta = delta });
+
+                DrawPixel((p0.x + t * dx), (p0.y + t * dy), DiffuseShading(diffuseShadingPoint, lightPoint), 1);
+                this.grid.Add(new PointToCheck { x = (p0.x + t * dx), y = (p0.y + t * dy), delta = delta });
+
+
             } else {
-                DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
-                this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
+                //DrawPixel((int)p1.x, (int)p1.y, this.sampleSphere.SpehereColor, 1);
+                //this.grid.Add(new PointToCheck { x = (int)p1.x, y = (int)p1.y });
+
+                //DrawPixel((p0.x + t * dx), (p0.y + t * dy), Colors.Red, 1);
+                //this.grid.Add(new PointToCheck { x = (p0.x + t * dx), y = (p0.y + t * dy), delta = delta });
+
+                DrawPixel((p0.x + t * dx), (p0.y + t * dy), DiffuseShading(diffuseShadingPoint, lightPoint), 1);
+                this.grid.Add(new PointToCheck { x = (p0.x + t * dx), y = (p0.y + t * dy), delta = delta });
+
+
             }
 
-            t = (-b - Math.Sqrt(delta)) / (2 * a);            
-            pointsOfIntersection.Add(new SinglePoint { x = p0.x + t * dx, y = p0.y + t * dy, z = p0.z + t * dz });
+            
 
         }
-
-        private Color DiffuseShading(Sphere sphere, SinglePoint viewerPoint, SinglePoint lightPoint, double dx, double dy, double dz, double a, double b, double c, int width, int height)
-        {
-            double x, y, z, t;
-            Vector3D normalVector = new Vector3D();
-            Vector3D lightVector = new Vector3D();
-            t = (-b - Math.Sqrt(b * b - 4 * a * c)) / (2 * a);
-
-            x = viewerPoint.x + t * dx;
-            y = viewerPoint.y + t * dy;
-            z = viewerPoint.z + t * dz;
-
+        private Color DiffuseShading(SinglePoint interscetionPoint, SinglePoint lightPoint)
+        {                   
             //Unit normal vector
-            normalVector.X = ((x - sphere.Center.x) / sphere.Radius);
-            normalVector.Y = (y - sphere.Center.y) / sphere.Radius;
-            normalVector.Z = (z - sphere.Center.z) / sphere.Radius;
+            normalVector.X = (interscetionPoint.x - this.sampleSphere.Center.x) / this.sampleSphere.Radius;
+            normalVector.Y = (interscetionPoint.y - this.sampleSphere.Center.y) / this.sampleSphere.Radius;
+            normalVector.Z = (interscetionPoint.z - this.sampleSphere.Center.z) / this.sampleSphere.Radius;
 
             //Vector from normal to the Light
-            lightVector.X = lightPoint.x - x;
-            lightVector.Y = lightPoint.y - y;
-            lightVector.Z = lightPoint.z - z;
+            lightVector.X = (lightPoint.x - interscetionPoint.x) / Math.Abs(lightPoint.x - interscetionPoint.x);
+            lightVector.Y = (lightPoint.y - interscetionPoint.y) / Math.Abs(lightPoint.y - interscetionPoint.y);
+            lightVector.Z = (lightPoint.z - interscetionPoint.z) / Math.Abs(lightPoint.z - interscetionPoint.z);
+            
 
             //constants
             double kd = 0.8;
@@ -215,9 +235,9 @@ namespace RayCastingAndPhong
 
             double fctr = Vector3D.DotProduct(normalVector, lightVector);
             Color resultColor = new Color();
-            resultColor.R = (byte)(ka * sphere.R + kd * fctr * sphere.R);
-            resultColor.G = (byte)(ka * sphere.G + kd * fctr * sphere.G);
-            resultColor.B = (byte)(ka * sphere.B + kd * fctr * sphere.B);
+            resultColor.R = (byte)(ka * this.sampleSphere.R + kd * fctr * this.sampleSphere.R);
+            resultColor.G = (byte)(ka * this.sampleSphere.G + kd * fctr * this.sampleSphere.G);
+            resultColor.B = (byte)(ka * this.sampleSphere.B + kd * fctr * this.sampleSphere.B);
             resultColor.A = 1;
 
             return resultColor;
