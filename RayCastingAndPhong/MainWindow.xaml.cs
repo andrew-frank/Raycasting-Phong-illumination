@@ -38,12 +38,6 @@ namespace RayCastingAndPhong
         private int canvasWidth = -1;
         private int canvasHeight = -1;
 
-        //private Sphere sampleSphere = new Sphere {
-        //    Center = new SinglePoint { x = 5, y = 4, z = 3 },
-        //    R = 200, G = 20, B = 140,
-        //    Radius = 4
-        //};
-
         private Sphere sampleSphere = new Sphere {
             Center = new SinglePoint { x = 50, y = 50, z = 4 },
             R = 255,
@@ -67,32 +61,17 @@ namespace RayCastingAndPhong
         double dx, dy, dz, a, b, c, delta, t;
 
         SinglePoint lightPoint = new SinglePoint();
-       
+
+        //PHONG VARIABLES
+        Vector3D vectorN = new Vector3D();
+        Vector3D vectorL = new Vector3D();
+        Vector3D vectorV = new Vector3D();
+        Vector3D vectorR = new Vector3D();
+
 
         public MainWindow()
         {
             InitializeComponent();
-
-            //Sphere sampleSphere = new Sphere();
-            //sampleSphere.Radius = 10;
-            //sampleSphere.SpehereColor = Colors.Red;
-            //sampleSphere.R = 255;
-            //sampleSphere.G = 0;
-            //sampleSphere.B = 0;
-            //samplep1 = new SinglePoint();
-            //samplep1.x = 5170;
-            //samplep1.y = 60;
-            //samplep1.z = 8;
-
-            //SinglePoint pointOfTheViewer = new SinglePoint();
-            //pointOfTheViewer.x = 100;
-            //pointOfTheViewer.y = 80;
-            //pointOfTheViewer.z = 1;
-
-            //int canvasWidth = 500;
-            //int canvasHeight = 300;
-            //int[,] intersections = new int[canvasWidth, canvasHeight];
-            //SphereInterscetionCheck(sampleSphere, pointOfTheViewer, canvasWidth, canvasHeight);
         }
 
 
@@ -211,9 +190,7 @@ namespace RayCastingAndPhong
                 this.grid.Add(new PointToCheck { x = (p0.x + t * dx), y = (p0.y + t * dy), delta = delta });
 
 
-            }
-
-            
+            }          
 
         }
         private Color DiffuseShading(SinglePoint interscetionPoint, SinglePoint lightPoint)
@@ -224,11 +201,10 @@ namespace RayCastingAndPhong
             normalVector.Z = (interscetionPoint.z - this.sampleSphere.Center.z) / this.sampleSphere.Radius;
 
             //Vector from normal to the Light
-            lightVector.X = (lightPoint.x - interscetionPoint.x) / Math.Abs(lightPoint.x - interscetionPoint.x);
-            lightVector.Y = (lightPoint.y - interscetionPoint.y) / Math.Abs(lightPoint.y - interscetionPoint.y);
-            lightVector.Z = (lightPoint.z - interscetionPoint.z) / Math.Abs(lightPoint.z - interscetionPoint.z);
-            
-
+            lightVector.X = (lightPoint.x - interscetionPoint.x);// / Math.Abs(lightPoint.x - interscetionPoint.x);
+            lightVector.Y = (lightPoint.y - interscetionPoint.y);// / Math.Abs(lightPoint.y - interscetionPoint.y);
+            lightVector.Z = (lightPoint.z - interscetionPoint.z);// / Math.Abs(lightPoint.z - interscetionPoint.z);
+            lightVector.Normalize();
             //constants
             double kd = 0.8;
             double ka = 0.2;
@@ -241,6 +217,19 @@ namespace RayCastingAndPhong
             resultColor.A = 1;
 
             return resultColor;
+        }
+        private Color PhongIllumination(SinglePoint pointOfInterscetion, Vector3D normalVector)
+        {           
+            vectorN = normalVector;
+            vectorL = lightVector;
+            vectorR.X = (this.sampleSphere.Center.x - pointOfInterscetion.x);
+            vectorR.Y = (this.sampleSphere.Center.y - pointOfInterscetion.y);
+            vectorR.Z = (this.sampleSphere.Center.z - pointOfInterscetion.z);
+            vectorV = -vectorR;
+            
+
+
+            return new Color();
         }
 
     }
